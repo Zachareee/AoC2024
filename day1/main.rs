@@ -35,6 +35,8 @@ fn answer1(arr1: &mut Vec<i32>, arr2: &mut Vec<i32>) -> i32 {
 
 fn answer2(arr1: Vec<i32>, arr2: Vec<i32>) -> i32 {
     HashSet::<i32>::from_iter(arr1).iter().fold(0, |acc, x| {
-        acc + x * arr2.iter().filter(|y| x == *y).count() as i32
+        acc + x * arr2
+            .iter()
+            .fold(0, |acc, y| if x == y { acc + 1 } else { acc })
     })
 }
