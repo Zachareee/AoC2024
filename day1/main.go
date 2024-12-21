@@ -10,10 +10,6 @@ import (
 	"strings"
 )
 
-type void struct{}
-
-var member void
-
 func main() {
 	bytes, err := os.ReadFile("input.txt")
 
@@ -55,9 +51,9 @@ func answer1(l1, l2 []int) int {
 }
 
 func answer2(l1, l2 []int) int {
-	set := make(map[int]void)
+	set := make(map[int]int)
 	for _, num := range l1 {
-		set[num] = member
+		set[num] = 0
 	}
 
 	occurrences := make(map[int]int)
