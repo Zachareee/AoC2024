@@ -20,11 +20,14 @@ fn main() {
         }
     }
 
-    println!("{}", answer1(arr1.as_mut(), arr2.as_mut()));
-    println!("{}", answer2(arr1, arr2));
+    println!("{}", answer1(arr1.as_ref(), arr2.as_ref()));
+    println!("{}", answer2(arr1.as_ref(), arr2.as_ref()));
 }
 
-fn answer1(arr1: &mut Vec<i32>, arr2: &mut Vec<i32>) -> i32 {
+fn answer1(arr1_init: &Vec<i32>, arr2_init: &Vec<i32>) -> i32 {
+    let mut arr1 = arr1_init.clone();
+    let mut arr2 = arr2_init.clone();
+
     arr1.sort();
     arr2.sort();
 
@@ -33,10 +36,11 @@ fn answer1(arr1: &mut Vec<i32>, arr2: &mut Vec<i32>) -> i32 {
         .fold(0, |acc, (a, b)| acc + (a - b).abs())
 }
 
-fn answer2(arr1: Vec<i32>, arr2: Vec<i32>) -> i32 {
-    HashSet::<i32>::from_iter(arr1).iter().fold(0, |acc, x| {
-        acc + x * arr2
-            .iter()
-            .fold(0, |acc, y| if x == y { acc + 1 } else { acc })
+fn answer2(arr1: &Vec<i32>, arr2: &Vec<i32>) -> i32 {
+    HashSet::<&i32>::from_iter(arr1).iter().fold(0, |acc, x| {
+        acc + *x
+            * arr2
+                .iter()
+                .fold(0, |acc, y| if *x == y { acc + 1 } else { acc })
     })
 }
