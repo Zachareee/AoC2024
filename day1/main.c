@@ -70,36 +70,22 @@ int answer1(vector arr1, vector arr2) {
   return sum;
 };
 
-bool not_contains(int check, vector v) {
+bool contains(int check, vector v) {
   for (int i = 0; i < v.idx; i++) {
-    if (check == v.elements[i]) return false;
+    if (check == v.elements[i]) return true;
   }
 
-  return true;
-}
-
-int count_in_vector(int value, vector v) {
-  int sum = 0;
-
-  for (int i = 0; i < v.idx; i++) {
-    if (v.elements[i] == value) sum++;
-  }
-
-  return sum;
+  return false;
 }
 
 int answer2(vector arr1, vector arr2) {
   int sum = 0;
-  vector checked = {0, 1, malloc(sizeof(int))};
-
-  for (int i = 0; i < arr1.idx; i++) {
-    int current_value = arr1.elements[i];
-    if (not_contains(current_value, checked)) {
-      add_to_vector(&checked, current_value);
-      sum += current_value * count_in_vector(current_value, arr2);
+  for (int i = 0; i < arr2.idx; i++) {
+    int current_value = arr2.elements[i];
+    if (contains(current_value, arr1)) {
+      sum += current_value;
     }
   }
 
-  free(checked.elements);
   return sum;
 };
