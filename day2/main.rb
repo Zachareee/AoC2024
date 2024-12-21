@@ -17,24 +17,19 @@ def test_safe?(arr)
 end
 
 def answer1(arrs)
-  unsafe = 0
-  arrs.each do |line|
-    unsafe += 1 unless test_safe?(line)
-  end
-  arrs.size - unsafe
+  arrs.select do |line|
+    test_safe?(line)
+  end.size
 end
 
 def answer2(arrs)
-  safe = 0
-  arrs.select do |line|
+  l = lambda do |line|
     line.size.times do |num|
-      if test_safe?(line[...num] + line[num + 1..])
-        safe += 1
-        break
-      end
+      return true if test_safe?(line[...num] + line[num + 1..])
     end
+    false
   end
-  safe
+  arrs.select(&l).count
 end
 
 def start
