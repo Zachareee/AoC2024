@@ -1,0 +1,11 @@
+class Object
+  def test_safe?: (Array[Integer]) -> bool
+
+  def answer1: (Array[Array[Integer]]) -> Integer
+
+  def answer2: (Array[Array[Integer]]) -> Integer
+
+  def start: () -> untyped
+
+  def test_safe_remove_one: (Array[Integer]) -> bool
+end

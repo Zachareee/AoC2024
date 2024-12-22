@@ -7,12 +7,10 @@ def test_safe?(arr)
   prev = arr[0]
   arr[1..].each do |num|
     result = (num - prev).abs
-    return false if result < 1 || result > 3
-    return false unless prev.public_send(compare, num)
+    return false if result < 1 || result > 3 || !prev.public_send(compare, num)
 
     prev = num
   end
-
   true
 end
 
@@ -22,20 +20,21 @@ def answer1(arrs)
   end.size
 end
 
-def answer2(arrs)
-  l = lambda do |line|
-    line.size.times do |num|
-      return true if test_safe?(line[...num] + line[num + 1..])
-    end
-    false
+def test_safe_remove_one(line)
+  line.size.times do |num|
+    return true if test_safe?(line[...num] + line[num + 1..])
   end
-  arrs.select(&l).count
+  false
+end
+
+def answer2(arrs)
+  arrs.select(&method(:test_safe_remove_one)).count
 end
 
 def start
-  arrs = []
+  arrs = [] # : Array[Array[Integer]]
   File.open('input.txt').readlines.each do |line|
-    arrs.push line.split(' ').map(&:to_i)
+    arrs << line.split(' ').map(&:to_i)
   end
 
   puts answer1(arrs)
