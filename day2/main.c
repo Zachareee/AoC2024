@@ -6,14 +6,20 @@
 #include "../vectors.h"
 #define BUFFERSIZE 128
 
-bool test_safe(vector v) {
-  int first = *(int *) v.elements[0];
-  int second = *(int *) v.elements[1];
+// if skip = -1, essentially becomes test_safe without skipping any index
+bool test_safe_with_skip(vector arr, int skip) {
+  int **elems = (int **) arr.elements;
+  int first = *elems[skip == 0 ? 1 : 0];
+  int second = *elems[skip <= 1 ? 2 : 1];
 
   bool increasing = first < second;
-  for (int j = 1; j < v.idx; j++) {
-    first = *(int *) v.elements[j - 1];
-    second = *(int *) v.elements[j];
+  for (int j = 1; j < arr.idx; j++) {
+    // skips the comparison for the skipped index
+    // special case: if j is the last elem and skip == j
+    if (j - 1 == skip || (j == arr.idx - 1 && skip == j)) continue;
+
+    first = *elems[j - 1];
+    second = *elems[j + (j == skip ? 1 : 0)];
     int result = abs(second - first);
     if (result < 1 || result > 3 || !(increasing ? first < second : first > second)) {
       return false;
@@ -27,31 +33,10 @@ int answer1(vector arr) {
   int safe = 0;
 
   for (int i = 0; i < arr.idx; i++) {
-    if (test_safe(*(vector *) arr.elements[i])) safe++;
+    if (test_safe_with_skip(*(vector *) arr.elements[i], -1)) safe++;
   }
 
   return safe;
-}
-
-bool test_safe_with_skip(vector arr, int skip) {
-  int first = *(int *) arr.elements[skip == 0 ? 1 : 0];
-  int second = *(int *) arr.elements[skip <= 1 ? 2 : 1];
-
-  bool increasing = first < second;
-  for (int j = 1; j < arr.idx; j++) {
-    // skips the comparison for the skipped index
-    // special case: if j is the last elem and skip == j
-    if (j - 1 == skip || (j == arr.idx - 1 && skip == j)) continue;
-
-    first = *(int *) arr.elements[j - 1];
-    second = *(int *) arr.elements[j + (j == skip ? 1 : 0)];
-    int result = abs(second - first);
-    if (result < 1 || result > 3 || !(increasing ? first < second : first > second)) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 int answer2(vector arr) {
@@ -59,8 +44,8 @@ int answer2(vector arr) {
 
   for (int i = 0; i < arr.idx; i++) {
     vector v = *(vector *) arr.elements[i];
-    for (int k = 0; k < arr.idx; k++) { // k indicates the idx to "remove" or basically skip
-      if (test_safe(v) || test_safe_with_skip(v, k)) {
+    for (int k = -1; k < arr.idx; k++) { // k indicates the idx to "remove" or basically skip
+      if (test_safe_with_skip(v, k)) {
         safe++;
         break;
       }
