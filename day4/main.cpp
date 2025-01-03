@@ -5,7 +5,6 @@
 #include <vector>
 
 using namespace std;
-const string KEYWORD = "XMAS";
 
 int answer1(vector<vector<char>> arr);
 int answer2(vector<vector<char>> arr);
@@ -17,14 +16,23 @@ int main(void)
   string line;
   ifstream file("input.txt");
 
-  while (!file.fail()) {
+  while (!file.fail())
+  {
     getline(file, line);
-    if (!line.empty()) {
+    if (!line.empty())
+    {
       v.push_back(vector<char>(line.begin(), line.end()));
     }
   }
 
   cout << answer1(v) << endl;
+  cout << answer2(v) << endl;
+}
+
+const string XMAS ("XMAS");
+bool compare_xmas(const char *to_compare)
+{
+  return (string) to_compare == XMAS;
 }
 
 int count_horizontal(vector<vector<char>> arr)
@@ -36,7 +44,7 @@ int count_horizontal(vector<vector<char>> arr)
     auto inner = arr[i];
     for (auto j = 0; j + 3 < size; ++j)
     {
-      if (inner[j] == 'X' && inner[j+1] == 'M' && inner[j+2] == 'A' && inner[j+3] == 'S')
+      if (compare_xmas(new char[5] {inner[j], inner[j+1], inner[j+2], inner[j+3], 0}))
       {
         j += 3;
         ++value;
@@ -55,12 +63,14 @@ int count_vertical(vector<vector<char>> arr)
   {
     for (auto j = 0; j + 3 < size; ++j)
     {
-      if (arr[j][i] == 'X' && arr[j+1][i] == 'M' && arr[j+2][i] == 'A' && arr[j+3][i] == 'S') {
+      if (compare_xmas(new char[5] {arr[j][i], arr[j+1][i], arr[j+2][i], arr[j+3][i], 0}))
+      {
         ++value;
         j += 3;
       }
     }
   }
+
   return value;
 }
 
@@ -73,10 +83,8 @@ int count_backslash(vector<vector<char>> arr)
   {
     for (auto j = 0; j + 3 < size; ++j)
     {
-      if (arr[i][j] == 'X' && arr[i+1][j+1] == 'M' && arr[i+2][j+2] == 'A' && arr[i+3][j+3] == 'S')
-      {
+      if (compare_xmas(new char[5] {arr[i][j], arr[i+1][j+1], arr[i+2][j+2], arr[i+3][j+3], 0}))
         ++value;
-      }
     }
   }
 
@@ -92,17 +100,16 @@ int count_slash(vector<vector<char>> arr)
   {
     for (auto j = 0; j + 3 < size; ++j)
     {
-      if (arr[i][j] == 'X' && arr[i-1][j+1] == 'M' && arr[i-2][j+2] == 'A' && arr[i-3][j+3] == 'S')
-      {
+      if (compare_xmas(new char[5] {arr[i][j], arr[i-1][j+1], arr[i-2][j+2], arr[i-3][j+3], 0}))
         ++value;
-      }
     }
   }
 
   return value;
 }
 
-int count_all(vector<vector<char>> arr) {
+int count_all(vector<vector<char>> arr)
+{
   return count_horizontal(arr) + count_vertical(arr) + count_backslash(arr) + count_slash(arr);
 }
 
@@ -110,7 +117,8 @@ int answer1(vector<vector<char>> arr)
 {
   int sum = count_all(arr);
 
-  for (int i = 0; i < arr.size(); ++i) {
+  for (int i = 0; i < arr.size(); ++i)
+  {
     reverse(arr[i].begin(), arr[i].end());
   }
 
