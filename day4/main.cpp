@@ -35,60 +35,36 @@ bool compare_xmas(const char *to_compare)
   return (string) to_compare == XMAS;
 }
 
-int count_horizontal(vector<vector<char>> arr)
+int count(vector<vector<char>> arr, int i_adder, int j_adder)
 {
   int value = 0;
   int size = arr.size();
-  for (auto i = 0; i < size; ++i)
+
+  for (auto i = 0; i < size - i_adder * 3; ++i)
   {
-    auto inner = arr[i];
-    for (auto j = 0; j + 3 < size; ++j)
+    for (auto j = 0; j < size - j_adder * 3; ++j)
     {
-      if (compare_xmas(new char[5] {inner[j], inner[j+1], inner[j+2], inner[j+3], 0}))
-      {
-        j += 3;
+      if (compare_xmas(new char[5] {arr[i][j], arr[i+i_adder][j+j_adder], arr[i+i_adder*2][j+j_adder*2], arr[i+i_adder*3][j+j_adder*3], 0}))
         ++value;
-      }
     }
   }
+
   return value;
+}
+
+int count_horizontal(vector<vector<char>> arr)
+{
+  return count(arr, 0, 1);
 }
 
 int count_vertical(vector<vector<char>> arr)
 {
-  int value = 0;
-  int size = arr.size();
-
-  for (auto i = 0; i < size; ++i)
-  {
-    for (auto j = 0; j + 3 < size; ++j)
-    {
-      if (compare_xmas(new char[5] {arr[j][i], arr[j+1][i], arr[j+2][i], arr[j+3][i], 0}))
-      {
-        ++value;
-        j += 3;
-      }
-    }
-  }
-
-  return value;
+  return count(arr, 1, 0);
 }
 
 int count_backslash(vector<vector<char>> arr)
 {
-  int value = 0;
-  int size = arr.size();
-
-  for (auto i = 0; i + 3 < size; ++i)
-  {
-    for (auto j = 0; j + 3 < size; ++j)
-    {
-      if (compare_xmas(new char[5] {arr[i][j], arr[i+1][j+1], arr[i+2][j+2], arr[i+3][j+3], 0}))
-        ++value;
-    }
-  }
-
-  return value;
+  return count(arr, 1, 1);
 }
 
 int count_slash(vector<vector<char>> arr)
