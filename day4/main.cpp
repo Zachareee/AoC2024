@@ -8,6 +8,7 @@ using namespace std;
 const string KEYWORD = "XMAS";
 
 int answer1(vector<vector<char>> arr);
+int answer2(vector<vector<char>> arr);
 
 int main(void)
 {
@@ -115,4 +116,43 @@ int answer1(vector<vector<char>> arr)
 
   reverse(arr.begin(), arr.end());
   return sum + count_all(arr);
+}
+
+const int pos[] = {-1, 1};
+bool x_mas(vector<vector<char>> arr, int x, int y)
+{
+  int m = 0, s = 0;
+
+  for (int i : pos)
+  {
+    for (int j : pos)
+    {
+      if (arr[x+i][y+j] == 'M') ++m;
+      if (arr[x+i][y+j] == 'S') ++s;
+    }
+  }
+
+
+  if (m != 2 || s != 2) return false;
+
+  return arr[x-1][y-1] != arr[x+1][y+1];
+}
+
+int answer2(vector<vector<char>> arr)
+{
+  int size = arr.size() - 1;
+  int count = 0;
+
+  for (int i = 1; i < size; ++i)
+  {
+    for (int j = 1; j < size; ++j)
+    {
+      if (arr[i][j] == 'A' && x_mas(arr, i, j))
+      {
+        ++count;
+      }
+    }
+  }
+
+  return count;
 }

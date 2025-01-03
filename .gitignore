@@ -3,3 +3,4 @@
 main
 target*
 *.lock
+input.txt
