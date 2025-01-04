@@ -22,8 +22,6 @@ public class Day5 {
 				seq.add(Stream.of(sc.next().split(",")).map(Integer::parseInt).toList());
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
-			e.printStackTrace();
 		}
 
 		System.out.println(answer1(ruleMap, seq));
@@ -39,30 +37,21 @@ public class Day5 {
 		return true;
 	}
 
-	private static int getMiddleNumber(List<Integer> l) {
-		return l.get(l.size() / 2);
+	private static int answer1(Map<Integer, List<Integer>> ruleMap, List<List<Integer>> seq) {
+		return seq.stream().filter(l -> valid(l, ruleMap)).mapToInt(l -> l.get(l.size() / 2)).sum();
 	}
 
-	private static int answer1(Map<Integer, List<Integer>> ruleMap, List<List<Integer>> seq) {
-		return seq.stream().filter(l -> valid(l, ruleMap)).mapToInt(Day5::getMiddleNumber).sum();
+	private static int ruleMatchCount(Map<Integer, List<Integer>> ruleMap, List<Integer> seq, int num) {
+		if (!ruleMap.containsKey(num))
+			return 0;
+		return (int) ruleMap.get(num).stream().filter(j -> seq.contains(j)).count();
 	}
 
 	private static int answer2(Map<Integer, List<Integer>> ruleMap, List<List<Integer>> sequence) {
-		return sequence.stream().filter(s -> !valid(s, ruleMap)).mapToInt(seq -> {
-			List<Integer> fixed = new ArrayList<>();
-			int size = seq.size();
-
-			for (int i = 0; fixed.size() != size; i = (i + 1) % size) {
-				int num = seq.get(i);
-				if (fixed.contains(num))
-					continue;
-
-				List<Integer> rule = ruleMap.get(num);
-				if (rule == null || rule.stream().allMatch(j -> !(fixed.contains(j) ^ seq.contains(j))))
-					fixed.add(num);
-			}
-
-			return getMiddleNumber(fixed);
-		}).sum();
+		// This algorithm assumes that the valid output of the sequence is deterministic
+		return sequence.stream().filter(s -> !valid(s, ruleMap)).mapToInt(seq -> seq.stream()
+				.sorted((x, y) -> ruleMatchCount(ruleMap, seq, x) - ruleMatchCount(ruleMap, seq, y))
+				.skip(seq.size() / 2).findFirst().get()).sum();
 	}
+
 }
