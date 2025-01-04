@@ -39,8 +39,12 @@ public class Day5 {
 		return true;
 	}
 
+	private static int getMiddleNumber(List<Integer> l) {
+		return l.get(l.size() / 2);
+	}
+
 	private static int answer1(Map<Integer, List<Integer>> ruleMap, List<List<Integer>> seq) {
-		return seq.stream().mapToInt(l -> valid(l, ruleMap) ? l.get(l.size() / 2) : 0).sum();
+		return seq.stream().filter(l -> valid(l, ruleMap)).mapToInt(Day5::getMiddleNumber).sum();
 	}
 
 	private static int answer2(Map<Integer, List<Integer>> ruleMap, List<List<Integer>> sequence) {
@@ -58,7 +62,7 @@ public class Day5 {
 					fixed.add(num);
 			}
 
-			return fixed.get(fixed.size() / 2);
+			return getMiddleNumber(fixed);
 		}).sum();
 	}
 }
