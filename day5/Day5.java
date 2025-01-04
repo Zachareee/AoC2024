@@ -29,9 +29,11 @@ public class Day5 {
 	}
 
 	private static boolean valid(List<Integer> list, Map<Integer, List<Integer>> rules) {
-		for (int i = 0; i < list.size() - 1; i++) {
+		int size = list.size();
+		for (int i = 0; i < size; i++) {
 			int num = list.get(i);
-			if (!rules.containsKey(num) || !rules.get(num).contains(list.get(i + 1)))
+			if (list.reversed().stream().skip(size - i)
+					.anyMatch(x -> rules.containsKey(num) && rules.get(num).contains(x)))
 				return false;
 		}
 		return true;
