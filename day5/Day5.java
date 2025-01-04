@@ -6,13 +6,17 @@ public class Day5 {
 	public static void main(String[] args) {
 		File file = new File("input.txt");
 
-		List<List<Integer>> rules = new ArrayList<>();
 		List<List<Integer>> seq = new ArrayList<>();
+		Map<Integer, List<Integer>> ruleMap = new HashMap<>();
+
 		try (Scanner sc = new Scanner(file)) {
 			while (sc.hasNext("\\d+\\|\\d+")) {
-				rules.add(Stream.of(sc.nextLine().split("\\|"))
-						.map(Integer::parseInt)
-						.toList());
+				int arr[] = Stream.of(sc.nextLine().split("\\|")).mapToInt(Integer::parseInt).toArray();
+
+				int key = arr[0];
+				List<Integer> innerList = ruleMap.getOrDefault(key, new ArrayList<>());
+				innerList.add(arr[1]);
+				ruleMap.put(key, innerList);
 			}
 			while (sc.hasNext()) {
 				seq.add(Stream.of(sc.next().split(",")).map(Integer::parseInt).toList());
@@ -21,7 +25,9 @@ public class Day5 {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		System.out.println(answer1(rules, seq));
+
+		System.out.println(answer1(ruleMap, seq));
+		System.out.println(answer2(ruleMap, seq));
 	}
 
 	private static boolean valid(List<Integer> list, Map<Integer, List<Integer>> rules) {
@@ -33,15 +39,26 @@ public class Day5 {
 		return true;
 	}
 
-	private static int answer1(List<List<Integer>> rules, List<List<Integer>> seq) {
-		Map<Integer, List<Integer>> ruleMap = new HashMap<>();
-		rules.forEach(l -> {
-			int key = l.get(0);
-			List<Integer> innerList = ruleMap.getOrDefault(key, new ArrayList<>());
-			innerList.add(l.get(1));
-			ruleMap.put(key, innerList);
-		});
-
+	private static int answer1(Map<Integer, List<Integer>> ruleMap, List<List<Integer>> seq) {
 		return seq.stream().mapToInt(l -> valid(l, ruleMap) ? l.get(l.size() / 2) : 0).sum();
+	}
+
+	private static int answer2(Map<Integer, List<Integer>> ruleMap, List<List<Integer>> sequence) {
+		return sequence.stream().filter(s -> !valid(s, ruleMap)).mapToInt(seq -> {
+			List<Integer> fixed = new ArrayList<>();
+			int size = seq.size();
+
+			for (int i = 0; fixed.size() != size; i = (i + 1) % size) {
+				int num = seq.get(i);
+				if (fixed.contains(num))
+					continue;
+
+				List<Integer> rule = ruleMap.get(num);
+				if (rule == null || rule.stream().allMatch(j -> !(fixed.contains(j) ^ seq.contains(j))))
+					fixed.add(num);
+			}
+
+			return fixed.get(fixed.size() / 2);
+		}).sum();
 	}
 }
