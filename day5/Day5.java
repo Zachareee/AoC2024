@@ -1,6 +1,6 @@
 import java.io.File;
 import java.util.*;
-import java.util.stream.Stream;
+import java.util.stream.*;
 
 public class Day5 {
 	public static void main(String[] args) {
@@ -29,14 +29,10 @@ public class Day5 {
 	}
 
 	private static boolean valid(List<Integer> list, Map<Integer, List<Integer>> rules) {
+		// IntStream indexing inspired by https://stackoverflow.com/a/18552071
 		int size = list.size();
-		for (int i = 0; i < size; i++) {
-			int num = list.get(i);
-			if (list.reversed().stream().skip(size - i)
-					.anyMatch(x -> rules.containsKey(num) && rules.get(num).contains(x)))
-				return false;
-		}
-		return true;
+		return IntStream.range(0, size).allMatch(i -> list.reversed().stream().skip(size - i)
+				.noneMatch(x -> rules.getOrDefault(list.get(i), List.of()).contains(x)));
 	}
 
 	private static int answer1(Map<Integer, List<Integer>> ruleMap, List<List<Integer>> seq) {
