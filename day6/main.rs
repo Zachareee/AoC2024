@@ -80,15 +80,6 @@ impl<'a> Guard<'a> {
     }
 }
 
-//impl<'a> Iterator for Guard<'a> {
-//    type Item = ((i32, i32), Facing);
-//
-//    fn next(&mut self) -> Option<Self::Item> {
-//        self.make_move();
-//        todo!()
-//    }
-//}
-
 impl<'a> Clone for Guard<'a> {
     fn clone(&self) -> Self {
         Guard { ..*self }
