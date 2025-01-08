@@ -57,9 +57,9 @@ impl<'a> Guard<'a> {
     }
 
     fn can_move(&self) -> bool {
-        let Guard { size, .. } = self;
+        let Guard { size, .. } = *self;
         let new_pos = self.next_position();
-        !(new_pos.0 < 0 || new_pos.1 < 0 || new_pos.0 >= *size || new_pos.1 >= *size)
+        !(new_pos.0 < 0 || new_pos.1 < 0 || new_pos.0 >= size || new_pos.1 >= size)
     }
 
     fn find_guard(map: &'a Vec<Vec<u8>>) -> Self {
@@ -69,7 +69,7 @@ impl<'a> Guard<'a> {
                     let position = (row.try_into().unwrap(), col.try_into().unwrap());
                     return Self {
                         position,
-                        facing: Facing(-1, 0),
+                        facing: UP,
                         map,
                         size: map.len().try_into().unwrap(),
                     };
