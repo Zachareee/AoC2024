@@ -4,21 +4,37 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 )
 
-// 380 too high
-func answer1(m map[byte][][2]int, size int) int {
-	set := make(map[[2]int]int)
+type node [2]int
+type set map[node]int
 
+func answer1(m map[byte][]node, size int) int {
+	return node_aggregator(m, func(a, b node, set set) {
+		if result := antinode(a, b); valid(result, size) {
+			set[result] = 0
+		}
+	})
+}
+
+func answer2(m map[byte][]node, size int) int {
+	return node_aggregator(m, func(a, b node, set set) {
+		for _, node := range resonance(a, b, size) {
+			set[node] = 0
+		}
+	})
+}
+
+func node_aggregator(m map[byte][]node, f func(node, node, set)) int {
+	set := make(map[node]int)
 	for _, v := range m {
 		for _, coord0 := range v {
 			for _, coord1 := range v {
 				if coord0 == coord1 {
 					continue
 				}
-				if result := antinode(coord0, coord1); valid(result, size) {
-					set[result] = 0
-				}
+				f(coord0, coord1, set)
 			}
 		}
 	}
@@ -26,46 +42,67 @@ func answer1(m map[byte][][2]int, size int) int {
 	return len(set)
 }
 
-func antinode(a, b [2]int) [2]int {
-	return [2]int{2*a[0] - b[0], 2*a[1] - b[1]}
+func antinode(a, b node) node {
+	return add_nodes(a, sub_nodes(a, b))
 }
 
-func valid(coord [2]int, size int) bool {
+func resonance(a, b node, size int) (nodes []node) {
+	dist := sub_nodes(a, b)
+	nodes = append(nodes, a)
+	node := a
+	for {
+		if node = add_nodes(node, dist); valid(node, size) {
+			nodes = append(nodes, node)
+		} else {
+			break
+		}
+	}
+	return
+}
+
+func add_nodes(a, b node) node {
+	return node{a[0] + b[0], a[1] + b[1]}
+}
+
+func sub_nodes(a, b node) node {
+	return node{a[0] - b[0], a[1] - b[1]}
+}
+
+func valid(coord node, size int) bool {
 	for _, value := range coord {
 		if value < 0 || value >= size {
 			return false
 		}
 	}
-	fmt.Println(coord)
 	return true
 }
 
 func main() {
-	text, err := os.ReadFile("./input.txt")
+	text, err := os.ReadFile("./eg.txt")
 
 	if err != nil {
 		fmt.Println("Unable to read file")
 		return
 	}
 
-	newlines := regexp.MustCompile("\\r?\\n")
-	lines := newlines.Split(string(text), -1)
+	lines := regexp.MustCompile("\\r?\\n").Split(strings.TrimSpace(string(text)), -1)
 
-	m := make(map[byte][][2]int)
+	m := make(map[byte][]node)
 	nodepattern := regexp.MustCompile("([\\d\\w])")
 
 	for i, line := range lines {
 		for _, match := range nodepattern.FindAllIndex([]byte(line), -1) {
-			coord := [2]int{i, match[0]}
+			coord := node{i, match[0]}
 			slice, ok := m[line[match[0]]]
 			if ok {
 				slice = append(slice, coord)
 			} else {
-				slice = [][2]int{coord}
+				slice = []node{coord}
 			}
 			m[line[match[0]]] = slice
 		}
 	}
 
-	fmt.Println(answer1(m, len(lines)-1))
+	fmt.Println(answer1(m, len(lines)))
+	fmt.Println(answer2(m, len(lines)))
 }
